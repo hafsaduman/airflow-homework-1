@@ -8,7 +8,6 @@ import psycopg2
 from pymongo.mongo_client import MongoClient
 from models.heat_and_humidity import HeatAndHumidityMeasureEvent
 
-# MongoDB bağlantısı
 client = MongoClient("mongodb+srv://cetingokhan:cetingokhan@cluster0.ff5aw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
 USERNAME = "hafsaduman"
@@ -37,7 +36,7 @@ def copy_anomalies_into_new_collection():
     target = db[f"anomalies_{USERNAME}"]
     anomalies = source.find({"temperature": {"$gt": 30}})
     for anomaly in anomalies:
-        anomaly.pop("_id", None)  # _id varsa sil
+        anomaly.pop("_id", None) 
         anomaly["creator"] = USERNAME
         target.insert_one(anomaly)
 
@@ -100,6 +99,5 @@ with DAG(
 
     final = DummyOperator(task_id="finaltask")
 
-    # DAG task flow (flow.png'e uygun olarak)
     start >> create_sample_data >> copy_anomalies >> final
     start >> insert_logs >> final
